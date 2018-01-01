@@ -568,7 +568,7 @@
    * @private
    * @param {Array} [array] The array to iterate over.
    * @param {Function} predicate The function invoked per iteration.
-   * @returns {boolean} Returns `true` if all elements pass the predicate check,
+   * @returns {boolean} Returns `true` if all relays pass the predicate check,
    *  else `false`.
    */
   function arrayEvery(array, predicate) {
@@ -663,7 +663,7 @@
   }
 
   /**
-   * Appends the elements of `values` to `array`.
+   * Appends the relays of `values` to `array`.
    *
    * @private
    * @param {Array} array The array to modify.
@@ -1221,7 +1221,7 @@
   }
 
   /**
-   * Replaces all `placeholder` elements in `array` with an internal placeholder
+   * Replaces all `placeholder` relays in `array` with an internal placeholder
    * and returns an array of their indexes.
    *
    * @private
@@ -2445,8 +2445,8 @@
      *
      * @private
      * @param {Array} array The array to sample.
-     * @param {number} n The number of elements to sample.
-     * @returns {Array} Returns the random elements.
+     * @param {number} n The number of relays to sample.
+     * @returns {Array} Returns the random relays.
      */
     function arraySampleSize(array, n) {
       return shuffleSelf(copyArray(array), baseClamp(n, 0, array.length));
@@ -2516,7 +2516,7 @@
     }
 
     /**
-     * Aggregates elements of `collection` on `accumulator` with keys transformed
+     * Aggregates relays of `collection` on `accumulator` with keys transformed
      * by `iteratee` and values set by `setter`.
      *
      * @private
@@ -2587,7 +2587,7 @@
      * @private
      * @param {Object} object The object to iterate over.
      * @param {string[]} paths The property paths to pick.
-     * @returns {Array} Returns the picked elements.
+     * @returns {Array} Returns the picked relays.
      */
     function baseAt(object, paths) {
       var index = -1,
@@ -2843,7 +2843,7 @@
      * @private
      * @param {Array|Object} collection The collection to iterate over.
      * @param {Function} predicate The function invoked per iteration.
-     * @returns {boolean} Returns `true` if all elements pass the predicate check,
+     * @returns {boolean} Returns `true` if all relays pass the predicate check,
      *  else `false`
      */
     function baseEvery(collection, predicate) {
@@ -3838,11 +3838,11 @@
 
     /**
      * The base implementation of `_.pullAt` without support for individual
-     * indexes or capturing the removed elements.
+     * indexes or capturing the removed relays.
      *
      * @private
      * @param {Array} array The array to modify.
-     * @param {number[]} indexes The indexes of elements to remove.
+     * @param {number[]} indexes The indexes of relays to remove.
      * @returns {Array} Returns `array`.
      */
     function basePullAt(array, indexes) {
@@ -3955,8 +3955,8 @@
      *
      * @private
      * @param {Array|Object} collection The collection to sample.
-     * @param {number} n The number of elements to sample.
-     * @returns {Array} Returns the random elements.
+     * @param {number} n The number of relays to sample.
+     * @returns {Array} Returns the random relays.
      */
     function baseSampleSize(collection, n) {
       var array = values(collection);
@@ -4344,7 +4344,7 @@
      * @private
      * @param {Array} array The array to query.
      * @param {Function} predicate The function invoked per iteration.
-     * @param {boolean} [isDrop] Specify dropping elements instead of taking them.
+     * @param {boolean} [isDrop] Specify dropping relays instead of taking them.
      * @param {boolean} [fromRight] Specify iterating from right to left.
      * @returns {Array} Returns the slice of `array`.
      */
@@ -6833,9 +6833,9 @@
     /*------------------------------------------------------------------------*/
 
     /**
-     * Creates an array of elements split into groups the length of `size`.
+     * Creates an array of relays split into groups the length of `size`.
      * If `array` can't be split evenly, the final chunk will be the remaining
-     * elements.
+     * relays.
      *
      * @static
      * @memberOf _
@@ -7005,7 +7005,7 @@
 
     /**
      * This method is like `_.difference` except that it accepts `comparator`
-     * which is invoked to compare elements of `array` to `values`. The order and
+     * which is invoked to compare relays of `array` to `values`. The order and
      * references of result values are determined by the first array. The comparator
      * is invoked with two arguments: (arrVal, othVal).
      *
@@ -7037,14 +7037,14 @@
     });
 
     /**
-     * Creates a slice of `array` with `n` elements dropped from the beginning.
+     * Creates a slice of `array` with `n` relays dropped from the beginning.
      *
      * @static
      * @memberOf _
      * @since 0.5.0
      * @category Array
      * @param {Array} array The array to query.
-     * @param {number} [n=1] The number of elements to drop.
+     * @param {number} [n=1] The number of relays to drop.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
      * @returns {Array} Returns the slice of `array`.
      * @example
@@ -7071,14 +7071,14 @@
     }
 
     /**
-     * Creates a slice of `array` with `n` elements dropped from the end.
+     * Creates a slice of `array` with `n` relays dropped from the end.
      *
      * @static
      * @memberOf _
      * @since 3.0.0
      * @category Array
      * @param {Array} array The array to query.
-     * @param {number} [n=1] The number of elements to drop.
+     * @param {number} [n=1] The number of relays to drop.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
      * @returns {Array} Returns the slice of `array`.
      * @example
@@ -7106,7 +7106,7 @@
     }
 
     /**
-     * Creates a slice of `array` excluding elements dropped from the end.
+     * Creates a slice of `array` excluding relays dropped from the end.
      * Elements are dropped until `predicate` returns falsey. The predicate is
      * invoked with three arguments: (value, index, array).
      *
@@ -7147,7 +7147,7 @@
     }
 
     /**
-     * Creates a slice of `array` excluding elements dropped from the beginning.
+     * Creates a slice of `array` excluding relays dropped from the beginning.
      * Elements are dropped until `predicate` returns falsey. The predicate is
      * invoked with three arguments: (value, index, array).
      *
@@ -7188,7 +7188,7 @@
     }
 
     /**
-     * Fills elements of `array` with `value` from `start` up to, but not
+     * Fills relays of `array` with `value` from `start` up to, but not
      * including, `end`.
      *
      * **Note:** This method mutates `array`.
@@ -7276,7 +7276,7 @@
     }
 
     /**
-     * This method is like `_.findIndex` except that it iterates over elements
+     * This method is like `_.findIndex` except that it iterates over relays
      * of `collection` from right to left.
      *
      * @static
@@ -7558,7 +7558,7 @@
 
     /**
      * This method is like `_.intersection` except that it accepts `comparator`
-     * which is invoked to compare elements of `arrays`. The order and references
+     * which is invoked to compare relays of `arrays`. The order and references
      * of result values are determined by the first array. The comparator is
      * invoked with two arguments: (arrVal, othVal).
      *
@@ -7591,7 +7591,7 @@
     });
 
     /**
-     * Converts all elements in `array` into a string separated by `separator`.
+     * Converts all relays in `array` into a string separated by `separator`.
      *
      * @static
      * @memberOf _
@@ -7629,7 +7629,7 @@
     }
 
     /**
-     * This method is like `_.indexOf` except that it iterates over elements of
+     * This method is like `_.indexOf` except that it iterates over relays of
      * `array` from right to left.
      *
      * @static
@@ -7695,7 +7695,7 @@
      * for equality comparisons.
      *
      * **Note:** Unlike `_.without`, this method mutates `array`. Use `_.remove`
-     * to remove elements from an array by predicate.
+     * to remove relays from an array by predicate.
      *
      * @static
      * @memberOf _
@@ -7771,7 +7771,7 @@
 
     /**
      * This method is like `_.pullAll` except that it accepts `comparator` which
-     * is invoked to compare elements of `array` to `values`. The comparator is
+     * is invoked to compare relays of `array` to `values`. The comparator is
      * invoked with two arguments: (arrVal, othVal).
      *
      * **Note:** Unlike `_.differenceWith`, this method mutates `array`.
@@ -7799,8 +7799,8 @@
     }
 
     /**
-     * Removes elements from `array` corresponding to `indexes` and returns an
-     * array of removed elements.
+     * Removes relays from `array` corresponding to `indexes` and returns an
+     * array of removed relays.
      *
      * **Note:** Unlike `_.at`, this method mutates `array`.
      *
@@ -7809,8 +7809,8 @@
      * @since 3.0.0
      * @category Array
      * @param {Array} array The array to modify.
-     * @param {...(number|number[])} [indexes] The indexes of elements to remove.
-     * @returns {Array} Returns the new array of removed elements.
+     * @param {...(number|number[])} [indexes] The indexes of relays to remove.
+     * @returns {Array} Returns the new array of removed relays.
      * @example
      *
      * var array = ['a', 'b', 'c', 'd'];
@@ -7834,12 +7834,12 @@
     });
 
     /**
-     * Removes all elements from `array` that `predicate` returns truthy for
-     * and returns an array of the removed elements. The predicate is invoked
+     * Removes all relays from `array` that `predicate` returns truthy for
+     * and returns an array of the removed relays. The predicate is invoked
      * with three arguments: (value, index, array).
      *
      * **Note:** Unlike `_.filter`, this method mutates `array`. Use `_.pull`
-     * to pull elements from an array by value.
+     * to pull relays from an array by value.
      *
      * @static
      * @memberOf _
@@ -7847,7 +7847,7 @@
      * @category Array
      * @param {Array} array The array to modify.
      * @param {Function} [predicate=_.identity] The function invoked per iteration.
-     * @returns {Array} Returns the new array of removed elements.
+     * @returns {Array} Returns the new array of removed relays.
      * @example
      *
      * var array = [1, 2, 3, 4];
@@ -8159,14 +8159,14 @@
     }
 
     /**
-     * Creates a slice of `array` with `n` elements taken from the beginning.
+     * Creates a slice of `array` with `n` relays taken from the beginning.
      *
      * @static
      * @memberOf _
      * @since 0.1.0
      * @category Array
      * @param {Array} array The array to query.
-     * @param {number} [n=1] The number of elements to take.
+     * @param {number} [n=1] The number of relays to take.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
      * @returns {Array} Returns the slice of `array`.
      * @example
@@ -8192,14 +8192,14 @@
     }
 
     /**
-     * Creates a slice of `array` with `n` elements taken from the end.
+     * Creates a slice of `array` with `n` relays taken from the end.
      *
      * @static
      * @memberOf _
      * @since 3.0.0
      * @category Array
      * @param {Array} array The array to query.
-     * @param {number} [n=1] The number of elements to take.
+     * @param {number} [n=1] The number of relays to take.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
      * @returns {Array} Returns the slice of `array`.
      * @example
@@ -8227,7 +8227,7 @@
     }
 
     /**
-     * Creates a slice of `array` with elements taken from the end. Elements are
+     * Creates a slice of `array` with relays taken from the end. Elements are
      * taken until `predicate` returns falsey. The predicate is invoked with
      * three arguments: (value, index, array).
      *
@@ -8268,7 +8268,7 @@
     }
 
     /**
-     * Creates a slice of `array` with elements taken from the beginning. Elements
+     * Creates a slice of `array` with relays taken from the beginning. Elements
      * are taken until `predicate` returns falsey. The predicate is invoked with
      * three arguments: (value, index, array).
      *
@@ -8361,7 +8361,7 @@
 
     /**
      * This method is like `_.union` except that it accepts `comparator` which
-     * is invoked to compare elements of `arrays`. Result values are chosen from
+     * is invoked to compare relays of `arrays`. Result values are chosen from
      * the first array in which the value occurs. The comparator is invoked
      * with two arguments: (arrVal, othVal).
      *
@@ -8437,7 +8437,7 @@
 
     /**
      * This method is like `_.uniq` except that it accepts `comparator` which
-     * is invoked to compare elements of `array`. The order of result values is
+     * is invoked to compare relays of `array`. The order of result values is
      * determined by the order they occur in the array.The comparator is invoked
      * with two arguments: (arrVal, othVal).
      *
@@ -8462,15 +8462,15 @@
 
     /**
      * This method is like `_.zip` except that it accepts an array of grouped
-     * elements and creates an array regrouping the elements to their pre-zip
+     * relays and creates an array regrouping the relays to their pre-zip
      * configuration.
      *
      * @static
      * @memberOf _
      * @since 1.2.0
      * @category Array
-     * @param {Array} array The array of grouped elements to process.
-     * @returns {Array} Returns the new array of regrouped elements.
+     * @param {Array} array The array of grouped relays to process.
+     * @returns {Array} Returns the new array of regrouped relays.
      * @example
      *
      * var zipped = _.zip(['a', 'b'], [1, 2], [true, false]);
@@ -8498,16 +8498,16 @@
     /**
      * This method is like `_.unzip` except that it accepts `iteratee` to specify
      * how regrouped values should be combined. The iteratee is invoked with the
-     * elements of each group: (...group).
+     * relays of each group: (...group).
      *
      * @static
      * @memberOf _
      * @since 3.8.0
      * @category Array
-     * @param {Array} array The array of grouped elements to process.
+     * @param {Array} array The array of grouped relays to process.
      * @param {Function} [iteratee=_.identity] The function to combine
      *  regrouped values.
-     * @returns {Array} Returns the new array of regrouped elements.
+     * @returns {Array} Returns the new array of regrouped relays.
      * @example
      *
      * var zipped = _.zip([1, 2], [10, 20], [100, 200]);
@@ -8610,7 +8610,7 @@
 
     /**
      * This method is like `_.xor` except that it accepts `comparator` which is
-     * invoked to compare elements of `arrays`. The order of result values is
+     * invoked to compare relays of `arrays`. The order of result values is
      * determined by the order they occur in the arrays. The comparator is invoked
      * with two arguments: (arrVal, othVal).
      *
@@ -8636,16 +8636,16 @@
     });
 
     /**
-     * Creates an array of grouped elements, the first of which contains the
-     * first elements of the given arrays, the second of which contains the
-     * second elements of the given arrays, and so on.
+     * Creates an array of grouped relays, the first of which contains the
+     * first relays of the given arrays, the second of which contains the
+     * second relays of the given arrays, and so on.
      *
      * @static
      * @memberOf _
      * @since 0.1.0
      * @category Array
      * @param {...Array} [arrays] The arrays to process.
-     * @returns {Array} Returns the new array of grouped elements.
+     * @returns {Array} Returns the new array of grouped relays.
      * @example
      *
      * _.zip(['a', 'b'], [1, 2], [true, false]);
@@ -8695,7 +8695,7 @@
     /**
      * This method is like `_.zip` except that it accepts `iteratee` to specify
      * how grouped values should be combined. The iteratee is invoked with the
-     * elements of each group: (...group).
+     * relays of each group: (...group).
      *
      * @static
      * @memberOf _
@@ -8704,7 +8704,7 @@
      * @param {...Array} [arrays] The arrays to process.
      * @param {Function} [iteratee=_.identity] The function to combine
      *  grouped values.
-     * @returns {Array} Returns the new array of grouped elements.
+     * @returns {Array} Returns the new array of grouped relays.
      * @example
      *
      * _.zipWith([1, 2], [10, 20], [100, 200], function(a, b, c) {
@@ -9100,14 +9100,14 @@
     });
 
     /**
-     * Checks if `predicate` returns truthy for **all** elements of `collection`.
+     * Checks if `predicate` returns truthy for **all** relays of `collection`.
      * Iteration is stopped once `predicate` returns falsey. The predicate is
      * invoked with three arguments: (value, index|key, collection).
      *
      * **Note:** This method returns `true` for
      * [empty collections](https://en.wikipedia.org/wiki/Empty_set) because
      * [everything is true](https://en.wikipedia.org/wiki/Vacuous_truth) of
-     * elements of empty collections.
+     * relays of empty collections.
      *
      * @static
      * @memberOf _
@@ -9116,7 +9116,7 @@
      * @param {Array|Object} collection The collection to iterate over.
      * @param {Function} [predicate=_.identity] The function invoked per iteration.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
-     * @returns {boolean} Returns `true` if all elements pass the predicate check,
+     * @returns {boolean} Returns `true` if all relays pass the predicate check,
      *  else `false`.
      * @example
      *
@@ -9149,7 +9149,7 @@
     }
 
     /**
-     * Iterates over elements of `collection`, returning an array of all elements
+     * Iterates over relays of `collection`, returning an array of all relays
      * `predicate` returns truthy for. The predicate is invoked with three
      * arguments: (value, index|key, collection).
      *
@@ -9191,7 +9191,7 @@
     }
 
     /**
-     * Iterates over elements of `collection`, returning the first element
+     * Iterates over relays of `collection`, returning the first element
      * `predicate` returns truthy for. The predicate is invoked with three
      * arguments: (value, index|key, collection).
      *
@@ -9229,7 +9229,7 @@
     var find = createFind(findIndex);
 
     /**
-     * This method is like `_.find` except that it iterates over elements of
+     * This method is like `_.find` except that it iterates over relays of
      * `collection` from right to left.
      *
      * @static
@@ -9325,7 +9325,7 @@
     }
 
     /**
-     * Iterates over elements of `collection` and invokes `iteratee` for each element.
+     * Iterates over relays of `collection` and invokes `iteratee` for each element.
      * The iteratee is invoked with three arguments: (value, index|key, collection).
      * Iteratee functions may exit iteration early by explicitly returning `false`.
      *
@@ -9360,7 +9360,7 @@
     }
 
     /**
-     * This method is like `_.forEach` except that it iterates over elements of
+     * This method is like `_.forEach` except that it iterates over relays of
      * `collection` from right to left.
      *
      * @static
@@ -9388,7 +9388,7 @@
      * Creates an object composed of keys generated from the results of running
      * each element of `collection` thru `iteratee`. The order of grouped values
      * is determined by the order they occur in `collection`. The corresponding
-     * value of each key is an array of elements responsible for generating the
+     * value of each key is an array of relays responsible for generating the
      * key. The iteratee is invoked with one argument: (value).
      *
      * @static
@@ -9615,9 +9615,9 @@
     }
 
     /**
-     * Creates an array of elements split into two groups, the first of which
-     * contains elements `predicate` returns truthy for, the second of which
-     * contains elements `predicate` returns falsey for. The predicate is
+     * Creates an array of relays split into two groups, the first of which
+     * contains relays `predicate` returns truthy for, the second of which
+     * contains relays `predicate` returns falsey for. The predicate is
      * invoked with one argument: (value).
      *
      * @static
@@ -9626,7 +9626,7 @@
      * @category Collection
      * @param {Array|Object} collection The collection to iterate over.
      * @param {Function} [predicate=_.identity] The function invoked per iteration.
-     * @returns {Array} Returns the array of grouped elements.
+     * @returns {Array} Returns the array of grouped relays.
      * @example
      *
      * var users = [
@@ -9699,7 +9699,7 @@
     }
 
     /**
-     * This method is like `_.reduce` except that it iterates over elements of
+     * This method is like `_.reduce` except that it iterates over relays of
      * `collection` from right to left.
      *
      * @static
@@ -9728,7 +9728,7 @@
     }
 
     /**
-     * The opposite of `_.filter`; this method returns the elements of `collection`
+     * The opposite of `_.filter`; this method returns the relays of `collection`
      * that `predicate` does **not** return truthy for.
      *
      * @static
@@ -9786,7 +9786,7 @@
     }
 
     /**
-     * Gets `n` random elements at unique keys from `collection` up to the
+     * Gets `n` random relays at unique keys from `collection` up to the
      * size of `collection`.
      *
      * @static
@@ -9794,9 +9794,9 @@
      * @since 4.0.0
      * @category Collection
      * @param {Array|Object} collection The collection to sample.
-     * @param {number} [n=1] The number of elements to sample.
+     * @param {number} [n=1] The number of relays to sample.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
-     * @returns {Array} Returns the random elements.
+     * @returns {Array} Returns the random relays.
      * @example
      *
      * _.sampleSize([1, 2, 3], 2);
@@ -9915,10 +9915,10 @@
     }
 
     /**
-     * Creates an array of elements, sorted in ascending order by the results of
+     * Creates an array of relays, sorted in ascending order by the results of
      * running each element in a collection thru each iteratee. This method
      * performs a stable sort, that is, it preserves the original sort order of
-     * equal elements. The iteratees are invoked with one argument: (value).
+     * equal relays. The iteratees are invoked with one argument: (value).
      *
      * @static
      * @memberOf _
@@ -12866,7 +12866,7 @@
     }
 
     /**
-     * This method is like `_.findKey` except that it iterates over elements of
+     * This method is like `_.findKey` except that it iterates over relays of
      * a collection in the opposite order.
      *
      * @static
@@ -15214,12 +15214,12 @@
      * @example
      *
      * // Avoid throwing errors for invalid selectors.
-     * var elements = _.attempt(function(selector) {
+     * var relays = _.attempt(function(selector) {
      *   return document.querySelectorAll(selector);
      * }, '>_>');
      *
-     * if (_.isError(elements)) {
-     *   elements = [];
+     * if (_.isError(relays)) {
+     *   relays = [];
      * }
      */
     var attempt = baseRest(function(func, args) {
@@ -15463,7 +15463,7 @@
      * Creates a function that invokes `func` with the arguments of the created
      * function. If `func` is a property name, the created function returns the
      * property value for a given element. If `func` is an array or object, the
-     * created function returns `true` for elements that contain the equivalent
+     * created function returns `true` for relays that contain the equivalent
      * source properties, otherwise it returns `false`.
      *
      * @static

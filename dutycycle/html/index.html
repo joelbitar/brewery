@@ -20,11 +20,17 @@
 </div>
 
 <ul>
-    <li ng-repeat="output in elements track by $index">
-        <span>{{ $index + 1}}</span>
+    <li ng-repeat="output in relays track by $index">
+        <span>L{{ $index + 1}}</span>
         <span> : </span>
         <span ng-if="output > 0">ON</span>
     </li>
+</ul>
+
+<ul>
+    <li>1: <span ng-if="relays[0] && relays[1]">ON</span></li>
+    <li>2: <span ng-if="relays[1] && relays[2]">ON</span></li>
+    <li>3: <span ng-if="relays[2] && relays[1]">ON</span></li>
 </ul>
 
 </body>
