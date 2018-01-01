@@ -7,26 +7,19 @@ var dcApp = angular.module('dcApp', []);
 dcApp.controller('DutyCycleController', function DutyCycleController($scope, $timeout) {
     // Length of the window in which we do the on/off switching
     // Longer window will increase the fidelity but shorter window length means faster distribution between phases.
-    $scope.window_length = 5000;
+    $scope.window_length = 1000;
+
+    var countdown_to_start = 2;
+    var loop_counter = 0;
 
     // How many percent power we want to put out
-    $scope.duty_cycle_percentage = 100;
+    $scope.duty_cycle_percentage = 10;
 
     // The minimum amount of time we want each state to be, ie, either On or Off for At least this amout of time
-    $scope.min_flicker_length = 500;
+    $scope.min_flicker_length = 100;
 
     // Holds states for each of the phases.
-    $scope.outputs = [0, 0, 0];
-
-    // Randomize outputs.
-    function setOutputOrder(){
-        $scope.output_order =  _.shuffle(
-            [1,2,3]
-        )
-    };
-
-    $scope.output_order = [1,2,3];
-    setOutputOrder();
+    $scope.elements = [0, 0, 0];
 
     // Get length of window (but not too short)
     function getWindowLength(){
@@ -51,16 +44,16 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
     }
 
     /*
-    * Get how many milliseconds each of the outputs should be on
+    * Get how many milliseconds each of the elements should be on
     * */
     function getOnTimeDistribution(){
         var percentage = getDutyCyclePercentage();
-        var number_of_outputs = _.size($scope.outputs);
-        // How much time we should distribute between all of the outputs
+        var number_of_outputs = _.size($scope.elements);
+        // How much time we should distribute between all of the elements
         var milliseconds_of_on_time = (parseInt($scope.window_length * (percentage / 100), 10)) * number_of_outputs;
         var onTime_distribution = [0,0,0];
         var max_onTime_possible = $scope.window_length * number_of_outputs;
-        var outputs_to_engage = $scope.output_order;
+        var outputs_to_engage = $scope.elements;
         var accumulated_on_time = 0;
         var milliseconds_to_distribute = milliseconds_of_on_time;
 
@@ -72,11 +65,11 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
             }
         }
 
-        // Which outputs we should engage with.
+        // Which elements we should engage with.
         outputs_to_engage = _.slice(outputs_to_engage, 0, _.floor(milliseconds_to_distribute / $scope.min_flicker_length));
 
-        // Go through all outputs we should engage with and set the ammount of on-time they should have.
-        _.each(outputs_to_engage, function(output_number, i){
+        // Go through all elements we should engage with and set the ammount of on-time they should have.
+        _.each(outputs_to_engage, function(state, i){
             var on_time = _.floor(milliseconds_to_distribute / (_.size(outputs_to_engage) - i));
 
             if(on_time > ($scope.window_length - $scope.min_flicker_length)){
@@ -88,7 +81,7 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
 
             _.set(
                 onTime_distribution,
-                output_number - 1,
+                i,
                 on_time
             )
         });
@@ -139,9 +132,9 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
         var outputs = [0, 0, 0];
 
 
-        // through all the outputs
+        // through all the elements
         // check for what frames they should have what states
-        _.each($scope.outputs, function(output, i){
+        _.each($scope.elements, function(output, i){
             var state = getStateForOutput(frame, onTime_distribution[i], i);
 
             _.set(
@@ -151,9 +144,10 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
             )
         });
 
-        $scope.outputs = outputs;
+        $scope.elements = outputs;
         $scope.frame = frame;
         //$timeout(loop, _.random(400,500));
+
         $timeout(loop, _.random(1,10));
     }
 
