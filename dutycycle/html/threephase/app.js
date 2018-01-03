@@ -11,15 +11,24 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
 
     var countdown_to_start = 2;
     var loop_counter = 0;
+    var SHIFT_RELAYS_INTERVAL = 1;
 
     // How many percent power we want to put out
-    $scope.duty_cycle_percentage = 10;
+    $scope.duty_cycle_percentage = 20;
 
     // The minimum amount of time we want each state to be, ie, either On or Off for At least this amout of time
     $scope.min_flicker_length = 100;
 
     // Holds states for each of the phases.
-    $scope.elements = [0, 0, 0];
+    $scope.relays = [0, 0, 0];
+
+    var relay_order = [1, 2, 3];
+
+    function randomizeRelayOrder(){
+        relay_order = _.shuffle(relay_order);
+    }
+
+    randomizeRelayOrder();
 
     // Get length of window (but not too short)
     function getWindowLength(){
@@ -44,107 +53,76 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
     }
 
     /*
-    * Get how many milliseconds each of the elements should be on
+    * Get how many milliseconds each of the relays should be on
     * */
     function getOnTimeDistribution(){
         var percentage = getDutyCyclePercentage();
-        var number_of_outputs = _.size($scope.elements);
-        // How much time we should distribute between all of the elements
-        var milliseconds_of_on_time = (parseInt($scope.window_length * (percentage / 100), 10)) * number_of_outputs;
-        var onTime_distribution = [0,0,0];
-        var max_onTime_possible = $scope.window_length * number_of_outputs;
-        var outputs_to_engage = $scope.elements;
-        var accumulated_on_time = 0;
-        var milliseconds_to_distribute = milliseconds_of_on_time;
+        var min_flicker_length = $scope.min_flicker_length;
+        // How much time we should distribute between all of the relays
+        var factor = (percentage / 100);
+        var window_length = getWindowLength();
+        var onTime_distribution = [0, 0, 0];
+        var relays_to_engage;
+        var onTime;
 
-        // If the gap between the number of milliseconds we should distribute and the total is Less than the min
-        // flicker length, change the milliseconds to distribute to accomodate for the min flicker length
-        if(milliseconds_to_distribute < max_onTime_possible){
-            if(milliseconds_to_distribute > (max_onTime_possible - $scope.min_flicker_length)){
-                milliseconds_to_distribute = max_onTime_possible - $scope.min_flicker_length;
-            }
+        // Which relays we should engage with and for how long
+        if(percentage <= 33){
+            // If we are at or lower than thirty percent, only use L1 and L2,
+            // If for instance we are at 30 percent, these should be on 100% of the time
+            relays_to_engage = _.take(relay_order, 2);
+            // If we are at 33, it should be 100%
+            onTime = window_length * (factor * 3);
+        }else{
+            relays_to_engage = _.take(relay_order, 3);
+            onTime = window_length * factor;
         }
 
-        // Which elements we should engage with.
-        outputs_to_engage = _.slice(outputs_to_engage, 0, _.floor(milliseconds_to_distribute / $scope.min_flicker_length));
-
-        // Go through all elements we should engage with and set the ammount of on-time they should have.
-        _.each(outputs_to_engage, function(state, i){
-            var on_time = _.floor(milliseconds_to_distribute / (_.size(outputs_to_engage) - i));
-
-            if(on_time > ($scope.window_length - $scope.min_flicker_length)){
-                on_time = parseInt($scope.window_length);
+        // Go through all relays we should engage with and set the ammount of on-time they should have.
+        _.each(relays_to_engage, function(relay_number, i){
+            if(onTime > (window_length - min_flicker_length)){
+                onTime = window_length;
             }
-
-            accumulated_on_time = accumulated_on_time + on_time;
-            milliseconds_to_distribute = milliseconds_to_distribute - on_time;
 
             _.set(
                 onTime_distribution,
-                i,
-                on_time
+                relay_number - 1,
+                onTime
             )
         });
 
         return onTime_distribution;
     }
 
-    function getStateForOutput(frame, onTime, output_number){
-        var start_frame = _.floor(($scope.window_length / 3) * output_number);
-        var state;
-
-        if(onTime < 1){
-            return 0;
-        }
-
-        var end_frame = start_frame + onTime;
-
-        if(end_frame > $scope.window_length){
-            end_frame = end_frame - $scope.window_length;
-        }
-
-        // If the Start frame is After the End frame, ie.
-        // If this output wraps around the end of the window
-        if(start_frame == end_frame){
-            // Full patte
-            state = 1;
-        }else{
-            if(start_frame > end_frame){
-                state = 1;
-                if(frame > end_frame && frame < start_frame){
-                    state = 0;
-                }
-            }else{
-                state = 0;
-                if(frame > start_frame && frame < end_frame){
-                    state = 1;
-                }
-            }
-        }
-
-        return state;
-
-    }
-
     function loop(){
-        var onTime_distribution = getOnTimeDistribution();
+        var onTime_distribution;
         var frame = millis() % $scope.window_length;
         var outputs = [0, 0, 0];
 
+        if($scope.frame > frame){
+            loop_counter += 1;
+            console.log(loop_counter);
+            if(loop_counter % SHIFT_RELAYS_INTERVAL == 0){
+                var first_element_number = relay_order[0];
+                relay_order[0] = relay_order[1];
+                relay_order[1] = relay_order[2];
+                relay_order[2] = first_element_number;
+                console.log(relay_order);
+            }
+        }
 
-        // through all the elements
+        onTime_distribution =  getOnTimeDistribution();
+
+        // through all the relays
         // check for what frames they should have what states
-        _.each($scope.elements, function(output, i){
-            var state = getStateForOutput(frame, onTime_distribution[i], i);
-
+        _.each($scope.relays, function(output, i){
             _.set(
                 outputs,
                 i,
-                state
+                frame < onTime_distribution[i]
             )
         });
 
-        $scope.elements = outputs;
+        $scope.relays = outputs;
         $scope.frame = frame;
         //$timeout(loop, _.random(400,500));
 
