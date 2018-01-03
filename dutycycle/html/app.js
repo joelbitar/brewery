@@ -7,19 +7,21 @@ var dcApp = angular.module('dcApp', []);
 dcApp.controller('DutyCycleController', function DutyCycleController($scope, $timeout) {
     // Length of the window in which we do the on/off switching
     // Longer window will increase the fidelity but shorter window length means faster distribution between phases.
-    $scope.window_length = 1000;
+    $scope.window_length = 500;
 
     var countdown_to_start = 2;
     var loop_counter = 0;
 
     // How many percent power we want to put out
-    $scope.duty_cycle_percentage = 10;
+    $scope.duty_cycle_percentage = 97;
 
     // The minimum amount of time we want each state to be, ie, either On or Off for At least this amout of time
     $scope.min_flicker_length = 100;
 
     // Holds states for each of the phases.
     $scope.elements = [0, 0, 0];
+
+    var element_order = [0, 1, 2];
 
     // Get length of window (but not too short)
     function getWindowLength(){
@@ -81,7 +83,7 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
 
             _.set(
                 onTime_distribution,
-                i,
+                _.get(element_order, i),
                 on_time
             )
         });
@@ -131,6 +133,17 @@ dcApp.controller('DutyCycleController', function DutyCycleController($scope, $ti
         var frame = millis() % $scope.window_length;
         var outputs = [0, 0, 0];
 
+        if($scope.frame > frame){
+            loop_counter += 1;
+            console.log(loop_counter);
+            if(loop_counter % 10 == 0){
+                var first_element_number = element_order[0];
+                element_order[0] = element_order[1];
+                element_order[1] = element_order[2];
+                element_order[2] = first_element_number;
+                console.log(element_order);
+            }
+        }
 
         // through all the elements
         // check for what frames they should have what states
