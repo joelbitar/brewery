@@ -1,10 +1,11 @@
 const int PIN_READ_POT_PERCENTAGE = 0;
 const int PIN_READ_SHIFT_RELAYS = 10;
+const int PIN_READ_PID_SELECTOR = 1;
 const int MAX_WATTAGE = 9900;
 
 const int MINIMUM_PERCENTAGE = 1;
 const int SHIFT_RELEYS_INTERVAL = 1;
-const int MIN_FLICKER_LENGTH = 30;
+const int MIN_FLICKER_LENGTH = 100;
 const boolean START_ACTIVE_STATE = true;
 
 // States of the relays
@@ -20,6 +21,10 @@ int onTime_distribution[3] = {0, 0, 0};
 // millisecond, max is window_length;
 int frame;
 float duty_cycle_factor;
+
+// What pid is currently selected 0 = no pid, 1 = 1, 2 = 2;
+int selected_pid;
+
 int previous_frame;
 int loop_counter = 0;
 
@@ -55,39 +60,53 @@ void shiftRelays(){
 int getPercentage(){
   int input = 0;
   int pot_value = analogRead(PIN_READ_POT_PERCENTAGE);
+  int p;
   
   if(pot_value > 0){
     input = ceil(pot_value);
   }
   
-  return map(
+  p = map(
     input,
     0,
     1023,
     MINIMUM_PERCENTAGE,
     100
   );
+  
+  return p;
+  
+  if(p >= 31 && p <= 34){
+    return 35;
+  }
+  
+  return p;
 }
+
+float getFactor(){
+  return float(getPercentage()) / 100;
+}
+
 
 int getFrame(){
   return millis() % window_length;
 }
 
 void setOnTimeDistribution(){
-  //float factor = getFactor();
+  float factor = getFactor();
   int onTime;
   
   for(int i = 0; i < 3; i++)
   {
-     if(duty_cycle_factor < 0.34){
-       onTime = float(window_length) * (duty_cycle_factor * 3.3);
+     if(factor < 0.34){
+       onTime = float(window_length) * (factor * 3.3);
        
        // Do not engage with the last phase.
        if(i == 2){
          onTime = 0;
        }
      }else{
-       onTime = float(window_length) * duty_cycle_factor;
+       onTime = float(window_length) * factor;
      }
      
      if(onTime < window_length && onTime > window_length - MIN_FLICKER_LENGTH){
@@ -138,24 +157,11 @@ void setCalculatedWattageOutput(){
   calculate_wattage_output = int(ceil(float(MAX_WATTAGE) * duty_cycle_factor));
 }
 
-void collectPotentiometerReadings(){
-  
-}
-
-void calculatePotentiometerReadings(){
-  
-}
-
-void resetPotentiometerReadings(){
-  
-}
-
 // the loop function runs over and over again forever
 void loop() {
   frame = getFrame();
   // Never start at a frame higher than 0
   if(previous_frame < 0 && frame > 0){
-    collectPotentiometerReadings();
     return;
   }
   
@@ -170,11 +176,8 @@ void loop() {
     Serial.println(String(onTime_distribution[0]) + "ms");
     Serial.println(String(onTime_distribution[1]) + "ms");
     Serial.println(String(onTime_distribution[2]) + "ms");
-    calculatePotentiometerReadings();
     setOnTimeDistribution();
     shiftRelays();
-    setCalculatedWattageOutput();
-    resetPotentiometerReadings();
     int percentage = getPercentage();
     Serial.println(String(calculate_wattage_output) + "w");
     Serial.print(percentage);
@@ -182,11 +185,11 @@ void loop() {
     Serial.print(frame);
     Serial.print(" - ");
     Serial.print(loop_counter);
+    Serial.println("");
+    Serial.print("PID selector reading: ");
+    Serial.print(analogRead(PIN_READ_PID_SELECTOR));
     Serial.println("--------------------------------------");
     Serial.println();
-  }else{
-    // collect potentiometer readings
-    collectPotentiometerReadings();
   }
   
   // Increment loop_counter
