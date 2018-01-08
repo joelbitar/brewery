@@ -1,6 +1,6 @@
 const int PIN_READ_POT_PERCENTAGE = 0;
 const int PIN_READ_SHIFT_RELAYS = 10;
-const int PIN_READ_PID_SELECTOR = 1;
+const int PIN_READ_MASTER_SWITCH = 9;
 const int MAX_WATTAGE = 9900;
 
 const int MINIMUM_PERCENTAGE = 1;
@@ -30,9 +30,9 @@ int loop_counter = 0;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
+  pinMode(0, OUTPUT);
+  pinMode(1, OUTPUT);
   pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
   
   Serial.begin(9600);
 }
@@ -91,6 +91,12 @@ float getFactor(){
 int getFrame(){
   return millis() % window_length;
 }
+void resetOnTimeDistribution(){
+  for(int i = 0; i < 3; i++)
+  {
+    onTime_distribution[i] = 0;
+  }
+}
 
 void setOnTimeDistribution(){
   float factor = getFactor();
@@ -130,18 +136,24 @@ void setOnTimeDistribution(){
 void setRelays(){
   boolean current_relay_state;
   boolean wanted_relay_state;
+
+  // If the master-on-switch is Off, reset on time distribution, should only be set at frame 0 to avoid fast-switching of relays.
+  if(!digitalRead(PIN_READ_MASTER_SWITCH) == false){
+     resetOnTimeDistribution();
+  }
   
   for(int i = 0; i < 3; i++)
   {
     wanted_relay_state = frame < onTime_distribution[i] ? HIGH : LOW;
     current_relay_state = relays[i];
     
+    
     if(wanted_relay_state != current_relay_state){
       // Set relay state
       relays[i] = wanted_relay_state;
       
       // Toggle output
-      digitalWrite(relay_order[i] + 2, wanted_relay_state);
+      digitalWrite(relay_order[i], wanted_relay_state);
     }
     /*
     if(frame < onTime_distribution[i]){
@@ -186,8 +198,9 @@ void loop() {
     Serial.print(" - ");
     Serial.print(loop_counter);
     Serial.println("");
-    Serial.print("PID selector reading: ");
-    Serial.print(analogRead(PIN_READ_PID_SELECTOR));
+    Serial.print("Master switch reading: ");
+    Serial.print(!digitalRead(PIN_READ_MASTER_SWITCH));
+    Serial.println();
     Serial.println("--------------------------------------");
     Serial.println();
   }
