@@ -3,9 +3,8 @@ const int PIN_READ_SHIFT_RELAYS = 10;
 const int PIN_READ_MASTER_SWITCH = 9;
 const int MAX_WATTAGE = 9900;
 
-const int MINIMUM_PERCENTAGE = 1;
 const int SHIFT_RELEYS_INTERVAL = 1;
-const int MIN_FLICKER_LENGTH = 100;
+const int MIN_FLICKER_LENGTH = 20; // one cycle at 50Hz is 10ms,
 const boolean START_ACTIVE_STATE = true;
 
 // States of the relays
@@ -30,9 +29,9 @@ int loop_counter = 0;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  pinMode(0, OUTPUT);
-  pinMode(1, OUTPUT);
-  pinMode(2, OUTPUT);
+  for(int i = 0; i < 3; i ++){
+    pinMode(i + 2, OUTPUT);
+  }
   
   Serial.begin(9600);
 }
@@ -70,7 +69,7 @@ int getPercentage(){
     input,
     0,
     1023,
-    MINIMUM_PERCENTAGE,
+    0,
     100
   );
   
@@ -98,34 +97,63 @@ void resetOnTimeDistribution(){
   }
 }
 
+int getTotalOnTimeToDistribute(){
+  float factor = getFactor();
+  int input = 0;
+  int pot_value = analogRead(PIN_READ_POT_PERCENTAGE);
+  int p;
+  
+  if(pot_value > 0){
+    input = ceil(pot_value);
+  }
+  
+  return map(
+    input,
+    0,
+    1023,
+    MIN_FLICKER_LENGTH,
+    window_length * 3
+  );
+}
+
 void setOnTimeDistribution(){
   float factor = getFactor();
+  int onTimeToDistribute = getTotalOnTimeToDistribute();
   int onTime;
+  
+  Serial.print("Factor: ");
+  Serial.println(factor);
+
+  Serial.println("Total time to distribute: " + String(onTimeToDistribute));
   
   for(int i = 0; i < 3; i++)
   {
-     if(factor < 0.34){
-       onTime = float(window_length) * (factor * 3.3);
-       
-       // Do not engage with the last phase.
-       if(i == 2){
-         onTime = 0;
-       }
-     }else{
-       onTime = float(window_length) * factor;
-     }
-     
-     if(onTime < window_length && onTime > window_length - MIN_FLICKER_LENGTH){
-       onTime = window_length - MIN_FLICKER_LENGTH;
-     }
-     
-     if(onTime > 0 && onTime < MIN_FLICKER_LENGTH){
-       onTime = MIN_FLICKER_LENGTH;
-     }
-     
+     onTime = onTimeToDistribute;
+
+     // If onTime is greater than the length of the window, set the maximum amout.
+     // This happend every time we are at above 33%
      if(onTime > window_length){
        onTime = window_length;
      }
+
+     // If we are at a ontime that the gap at the end is Less than the flicker-length
+     // We need to set the off-time to the flicker-length
+     // Example:
+     // Max flicker lenght is 100
+     // Window length is 1000
+     // On Time is 950,
+     // Off time is then 50 (less than flicker lenght)
+     // Then we round down and set onTime to 900.
+     if(onTime < window_length && onTime > window_length - MIN_FLICKER_LENGTH){
+       onTime = window_length - MIN_FLICKER_LENGTH;
+     }
+
+     // onTime can Not be less than flicker time.
+     if(onTime < MIN_FLICKER_LENGTH){
+       onTime = 0;
+     }
+
+     onTimeToDistribute = onTimeToDistribute - onTime;
      
      Serial.println(String(i) + " - " + String(onTime));
      
@@ -136,6 +164,7 @@ void setOnTimeDistribution(){
 void setRelays(){
   boolean current_relay_state;
   boolean wanted_relay_state;
+  int relay_index = 0;
 
   // If the master-on-switch is Off, reset on time distribution, should only be set at frame 0 to avoid fast-switching of relays.
   if(!digitalRead(PIN_READ_MASTER_SWITCH) == false){
@@ -144,16 +173,18 @@ void setRelays(){
   
   for(int i = 0; i < 3; i++)
   {
+    relay_index = relay_order[i];
+    
     wanted_relay_state = frame < onTime_distribution[i] ? HIGH : LOW;
-    current_relay_state = relays[i];
+    current_relay_state = relays[relay_index];
     
     
     if(wanted_relay_state != current_relay_state){
       // Set relay state
-      relays[i] = wanted_relay_state;
+      relays[relay_index] = wanted_relay_state;
       
       // Toggle output
-      digitalWrite(relay_order[i], wanted_relay_state);
+      digitalWrite(relay_index + 2, wanted_relay_state);
     }
     /*
     if(frame < onTime_distribution[i]){
@@ -185,12 +216,20 @@ void loop() {
   // Do all calculations and whatnot at the first frame.
   if(frame == 0){
     
-    Serial.println(String(onTime_distribution[0]) + "ms");
-    Serial.println(String(onTime_distribution[1]) + "ms");
-    Serial.println(String(onTime_distribution[2]) + "ms");
     setOnTimeDistribution();
     shiftRelays();
     int percentage = getPercentage();
+    
+    Serial.println(String(onTime_distribution[0]) + "ms");
+    Serial.println(String(onTime_distribution[1]) + "ms");
+    Serial.println(String(onTime_distribution[2]) + "ms");
+
+
+    Serial.println("reley order[0]: " + String(relay_order[0]));
+    Serial.println("reley order[1]: " + String(relay_order[1]));
+    Serial.println("reley order[2]: " + String(relay_order[2]));
+    
+    
     Serial.println(String(calculate_wattage_output) + "w");
     Serial.print(percentage);
     Serial.print(" - ");
