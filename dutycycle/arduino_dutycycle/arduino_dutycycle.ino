@@ -1,7 +1,6 @@
 const int PIN_READ_POT_PERCENTAGE = 0;
 const int PIN_READ_SHIFT_RELAYS = 10;
 const int PIN_READ_MASTER_SWITCH = 9;
-const int MAX_WATTAGE = 9900;
 
 const int SHIFT_RELEYS_INTERVAL = 1;
 const int MIN_FLICKER_LENGTH = 20; // one cycle at 50Hz is 10ms,
@@ -12,14 +11,12 @@ boolean relays[3] = {LOW, LOW, LOW};
 // Is set in shiftRelays function
 int relay_order[3] = {0, 1, 2};
 
-int calculate_wattage_output;
 int val;
 int percentage;
 int window_length = 500;
 int onTime_distribution[3] = {0, 0, 0};
 // millisecond, max is window_length;
 int frame;
-float duty_cycle_factor;
 
 // What pid is currently selected 0 = no pid, 1 = 1, 2 = 2;
 int selected_pid;
@@ -56,40 +53,10 @@ void shiftRelays(){
   relay_order[2] = first_relay_number;
 }
 
-int getPercentage(){
-  int input = 0;
-  int pot_value = analogRead(PIN_READ_POT_PERCENTAGE);
-  int p;
-  
-  if(pot_value > 0){
-    input = ceil(pot_value);
-  }
-  
-  p = map(
-    input,
-    0,
-    1023,
-    0,
-    100
-  );
-  
-  return p;
-  
-  if(p >= 31 && p <= 34){
-    return 35;
-  }
-  
-  return p;
-}
-
-float getFactor(){
-  return float(getPercentage()) / 100;
-}
-
-
 int getFrame(){
   return millis() % window_length;
 }
+
 void resetOnTimeDistribution(){
   for(int i = 0; i < 3; i++)
   {
@@ -97,8 +64,15 @@ void resetOnTimeDistribution(){
   }
 }
 
+int getMaxOnTime(){
+  return window_length * 3;
+}
+
+int getMinOnTime(){
+  return MIN_FLICKER_LENGTH;
+}
+
 int getTotalOnTimeToDistribute(){
-  float factor = getFactor();
   int input = 0;
   int pot_value = analogRead(PIN_READ_POT_PERCENTAGE);
   int p;
@@ -111,19 +85,15 @@ int getTotalOnTimeToDistribute(){
     input,
     0,
     1023,
-    MIN_FLICKER_LENGTH,
-    window_length * 3
+    getMinOnTime(),
+    getMaxOnTime()
   );
 }
 
 void setOnTimeDistribution(){
-  float factor = getFactor();
   int onTimeToDistribute = getTotalOnTimeToDistribute();
   int onTime;
   
-  Serial.print("Factor: ");
-  Serial.println(factor);
-
   Serial.println("Total time to distribute: " + String(onTimeToDistribute));
   
   for(int i = 0; i < 3; i++)
@@ -196,8 +166,14 @@ void setRelays(){
   }
 }
 
-void setCalculatedWattageOutput(){
-  calculate_wattage_output = int(ceil(float(MAX_WATTAGE) * duty_cycle_factor));
+int getDisplayOutput(){
+  return map(
+    getTotalOnTimeToDistribute(),
+    getMinOnTime(),
+    getMaxOnTime(),
+    0,
+    9
+  );
 }
 
 // the loop function runs over and over again forever
@@ -218,7 +194,6 @@ void loop() {
     
     setOnTimeDistribution();
     shiftRelays();
-    int percentage = getPercentage();
     
     Serial.println(String(onTime_distribution[0]) + "ms");
     Serial.println(String(onTime_distribution[1]) + "ms");
@@ -228,10 +203,10 @@ void loop() {
     Serial.println("reley order[0]: " + String(relay_order[0]));
     Serial.println("reley order[1]: " + String(relay_order[1]));
     Serial.println("reley order[2]: " + String(relay_order[2]));
+
+    Serial.print("Display: ");
+    Serial.println(getDisplayOutput());
     
-    
-    Serial.println(String(calculate_wattage_output) + "w");
-    Serial.print(percentage);
     Serial.print(" - ");
     Serial.print(frame);
     Serial.print(" - ");
