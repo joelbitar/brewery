@@ -1,5 +1,5 @@
 const int PIN_READ_POT_PERCENTAGE = A0;
-const int PIN_READ_SHIFT_RELAYS = 2;
+const int PIN_READ_SHIFT_RELAYS = 13;
 const int PIN_READ_MASTER_SWITCH = A5;
 
 const int SHIFT_RELEYS_INTERVAL = 1;
@@ -8,7 +8,7 @@ const int MIN_ON_TIME = 350; // Set to at least min flicker time.
 const boolean START_ACTIVE_STATE = true;
 
 // Is set in shiftRelays function
-const int RELAY_PINS[3] = {A1, A2, A4};
+const int RELAY_PINS[3] = {2, 4, 7};
 int relays[3] = {RELAY_PINS[0], RELAY_PINS[1], RELAY_PINS[2]};
 
 int val;
@@ -89,7 +89,7 @@ int getTotalOnTimeToDistribute(){
   return map(
     input,
     0,
-    1015,
+    1020,
     getMinOnTime(),
     getMaxOnTime()
   );
