@@ -16,6 +16,8 @@ const int RELAY_PINS[3] = {
 };
 
 int relays[3] = {RELAY_PINS[0], RELAY_PINS[1], RELAY_PINS[2]};
+int relay_indexes[3] = {0, 1, 2};
+
 boolean relay_states[3] = {false, false, false};
 String display_output[2] = {"", ""};
 
@@ -49,19 +51,19 @@ void shiftRelays(){
   if(!digitalRead(PIN_READ_SHIFT_RELAYS)){
     for(int i = 0; i < 3; i++)
     {
-      relays[i] = RELAY_PINS[i];
+      relay_indexes[i] = i;
     }
     
     return;
   }
   
-  int first_relay_pin = relays[0];
+  int first_relay_index = relay_indexes[0];
   
   for(int i = 0; i < 2; i++)
   {
-    relays[i] = relays[i + 1];
+    relay_indexes[i] = relay_indexes[i + 1];
   }
-  relays[2] = first_relay_pin;
+  relay_indexes[2] = first_relay_index;
 }
 
 int getFrame(){
@@ -156,14 +158,14 @@ void setRelays(){
   {
     wanted_state = frame < onTime_distribution[i] ? HIGH : LOW;
 
-    if(wanted_state == relay_states[i]){
+    if(wanted_state == relay_states[relay_indexes[i]]){
       continue;
     }
 
-    relay_states[i] = wanted_state;
+    relay_states[relay_indexes[i]] = wanted_state;
     
     digitalWrite(
-      relays[i],
+      RELAY_PINS[relay_indexes[i]],
       wanted_state
     );
   }
@@ -210,9 +212,9 @@ void setDisplayOutput(){
   line_one = line_one + percent_string;
 
   // Line two
-  relay_one = "0%";
-  relay_two = "0%";
-  relay_three = "0%";
+  relay_one   = String(map(onTime_distribution[relay_indexes[0]], 0, window_length, 0, 100)) + "%";
+  relay_two   = String(map(onTime_distribution[relay_indexes[1]], 0, window_length, 0, 100)) + "%";
+  relay_three = String(map(onTime_distribution[relay_indexes[2]], 0, window_length, 0, 100)) + "%";
 
   if(relay_two.length() <= 2){
     relay_two = " " + relay_two;
