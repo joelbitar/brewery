@@ -4,7 +4,7 @@ const int PIN_READ_MASTER_SWITCH = A5;
 
 const int SHIFT_RELEYS_INTERVAL = 1;
 const int MIN_FLICKER_LENGTH = 20; // one cycle at 50Hz is 10ms,
-const int MIN_ON_TIME = 350; // Set to at least min flicker time.
+const int MIN_ON_TIME = MIN_FLICKER_LENGTH + 400; // Set to at least min flicker time.
 const boolean START_ACTIVE_STATE = true;
 
 // Is set in shiftRelays function
@@ -15,6 +15,7 @@ const int RELAY_PINS[3] = {
 };
 
 int relays[3] = {RELAY_PINS[0], RELAY_PINS[1], RELAY_PINS[2]};
+boolean relay_states[3] = {false, false, false};
 
 int val;
 int percentage;
@@ -142,6 +143,8 @@ void setOnTimeDistribution(){
 }
 
 void setRelays(){
+  boolean wanted_state;
+  
   // If the master-on-switch is Off, reset on time distribution, should only be set at frame 0 to avoid fast-switching of relays.
   if(!digitalRead(PIN_READ_MASTER_SWITCH) == false){
      resetOnTimeDistribution();
@@ -149,9 +152,17 @@ void setRelays(){
   
   for(int i = 0; i < 3; i++)
   {
+    wanted_state = frame < onTime_distribution[i] ? HIGH : LOW;
+
+    if(wanted_state == relay_states[i]){
+      continue;
+    }
+
+    relay_states[i] = wanted_state;
+    
     digitalWrite(
       relays[i],
-      frame < onTime_distribution[i] ? HIGH : LOW
+      wanted_state
     );
   }
 }
