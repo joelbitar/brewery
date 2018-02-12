@@ -8,7 +8,12 @@ const int MIN_ON_TIME = 350; // Set to at least min flicker time.
 const boolean START_ACTIVE_STATE = true;
 
 // Is set in shiftRelays function
-const int RELAY_PINS[3] = {2, 4, 7};
+const int RELAY_PINS[3] = {
+  6,
+  7,
+  8
+};
+
 int relays[3] = {RELAY_PINS[0], RELAY_PINS[1], RELAY_PINS[2]};
 
 int val;
