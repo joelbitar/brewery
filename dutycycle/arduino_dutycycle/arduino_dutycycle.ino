@@ -6,6 +6,7 @@ const int SHIFT_RELEYS_INTERVAL = 1;
 const int MIN_FLICKER_LENGTH = 20; // one cycle at 50Hz is 10ms,
 const int MIN_ON_TIME = MIN_FLICKER_LENGTH + 400; // Set to at least min flicker time.
 const boolean START_ACTIVE_STATE = true;
+const int MAX_WATTAGE = 7200;
 
 // Is set in shiftRelays function
 const int RELAY_PINS[3] = {
@@ -16,6 +17,7 @@ const int RELAY_PINS[3] = {
 
 int relays[3] = {RELAY_PINS[0], RELAY_PINS[1], RELAY_PINS[2]};
 boolean relay_states[3] = {false, false, false};
+String display_output[2] = {"", ""};
 
 int val;
 int percentage;
@@ -167,14 +169,70 @@ void setRelays(){
   }
 }
 
-int getDisplayOutput(){
-  return map(
+void setDisplayOutput(){
+  String line_one;
+  String line_two;
+  
+  String percent_string;
+  String wattage_string;
+  int percent_on;
+  int wattage;
+
+  String relay_one;
+  String relay_two;
+  String relay_three;
+  
+  percent_on = map(
     getTotalOnTimeToDistribute(),
-    getMinOnTime(),
+    0,
     getMaxOnTime(),
     0,
-    9
+    100
   );
+  
+  wattage = map(
+    percent_on,
+    0,
+    100,
+    0,
+    MAX_WATTAGE
+  );
+
+  percent_string = String(percent_on) + "%";
+  wattage_string = String(wattage) + " watt";
+
+  line_one = wattage_string;
+  
+  while((line_one.length() + percent_string.length()) < 16){
+    line_one = line_one + " ";
+  }
+
+  line_one = line_one + percent_string;
+
+  // Line two
+  relay_one = "0%";
+  relay_two = "0%";
+  relay_three = "0%";
+
+  if(relay_two.length() <= 2){
+    relay_two = " " + relay_two;
+  }
+  
+  while(relay_one.length() < 6){
+    relay_one = relay_one + " ";
+  }
+
+  line_two = relay_one + relay_two;
+
+  while((line_two.length() + relay_three.length()) < 16){
+    line_two = line_two + " ";
+  }
+
+  line_two = line_two + relay_three;
+  
+
+  display_output[0] = line_one;
+  display_output[1] = line_two;
 }
 
 // the loop function runs over and over again forever
@@ -195,6 +253,7 @@ void loop() {
     
     setOnTimeDistribution();
     shiftRelays();
+    setDisplayOutput();
     
     Serial.println(String(onTime_distribution[0]) + "ms");
     Serial.println(String(onTime_distribution[1]) + "ms");
@@ -205,8 +264,9 @@ void loop() {
     Serial.println("releys[1]: " + String(relays[1]));
     Serial.println("releys[2]: " + String(relays[2]));
 
-    Serial.print("Display: ");
-    Serial.println(getDisplayOutput());
+    Serial.println("Display: ");
+    Serial.println(display_output[0]);
+    Serial.println(display_output[1]);
     
     Serial.print(" - ");
     Serial.print(frame);
